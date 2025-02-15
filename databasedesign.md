@@ -10,6 +10,7 @@ Primary table for storing user profile information
 - `id` (INTEGER PRIMARY KEY)
 - `name` (TEXT NOT NULL)
 - `age` (INTEGER NOT NULL)
+- `profile_picture` (BLOB) # Store the image data
 - `created_at` (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
 - `updated_at` (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
 

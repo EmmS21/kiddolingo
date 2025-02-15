@@ -4,8 +4,14 @@
  ┣ 📂 frontend
  ┃ ┣ 📂 app
  ┃ ┃ ┣ 📂 api            # API Route Handlers
- ┃ ┃ ┃ ┗ 📂 users
- ┃ ┃ ┃   ┗ 📜 route.ts   # POST /api/users endpoint
+ ┃ ┃ ┃ ┣ 📂 users
+ ┃ ┃ ┃   ┣ 📂 profile-picture
+ ┃ ┃ ┃   ┃ ┗ 📜 route.ts    # Handle profile picture uploads
+ ┃ ┃ ┃   ┗ 📜 route.ts      # GET/POST /api/users endpoint
+ ┃ ┃ ┣ 📂 dashboard       # New dashboard page
+ ┃ ┃ ┃ ┗ 📜 page.tsx
+ ┃ ┃ ┣ 📂 components      # Shared components
+ ┃ ┃ ┃ ┗ 📜 ProfilePicture.tsx
  ┃ ┃ ┣ 📂 lib            # Shared utilities
  ┃ ┃ ┃ ┣ 📜 db.ts        # Database operations
  ┃ ┃ ┃ ┗ 📜 types.ts     # Shared TypeScript types
@@ -27,10 +33,11 @@
  ┗ 📜 projectdescription.md
 
 # New Additions:
-1. Added `/api/users/route.ts` for handling user data submission
-2. Kept existing lib structure with db.ts and types.ts
+1. Added `/api/users/[id]/route.ts` for fetching individual user data
+2. Updated folder structure to support dynamic API routes
 
 # File Purposes:
 - `lib/db.ts`: Database operations
 - `lib/types.ts`: Shared TypeScript types
-- `api/users/route.ts`: User-related API endpoints
+- `api/users/route.ts`: GET/POST endpoints for user data
+- `api/users/profile-picture/route.ts`: Handle profile picture uploads

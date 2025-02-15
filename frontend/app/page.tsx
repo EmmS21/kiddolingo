@@ -1,14 +1,16 @@
 'use client';
 
 import Image from "next/image";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { saveUserData } from './lib/db';
 import type { Step } from './lib/types';
+import { useRouter } from 'next/navigation';
 
 type Step = 'name' | 'age' | 'interests' | 'language';
 
 export default function Home() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<Step>('name');
   const [formData, setFormData] = useState({
     name: '',
@@ -36,6 +38,14 @@ export default function Home() {
     'Afrikaans'
   ];
 
+  useEffect(() => {
+    // Check if user exists
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      router.push('/dashboard');
+    }
+  }, [router]);
+
   const handleNext = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -57,7 +67,7 @@ export default function Home() {
         toast.success('Profile saved successfully! Redirecting to dashboard...');
         
         setTimeout(() => {
-          // router.push('/dashboard');
+          router.push('/dashboard');
         }, 2000);
       } else {
         // Normal wizard progression
@@ -215,7 +225,7 @@ export default function Home() {
                   <div className="flex items-center">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                       step.status === 'current' ? 'bg-purple-600 text-white' : 
-                      step.status === 'completed' ? 'bg-green-500 text-white' : 'bg-gray-200'
+                      step.status === 'completed' ? 'bg-green-500 text-black' : 'bg-gray-200'
                     }`}>
                       {index + 1}
                     </div>
