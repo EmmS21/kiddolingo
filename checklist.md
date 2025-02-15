@@ -1,5 +1,3 @@
-
-
 # MVP Checklist - 24 Hour Build
 
 ## Core Features Priority
@@ -10,21 +8,21 @@
 
 ## Frontend (NextJS) Tasks
 ### High Priority
-- [ ] Setup Next.js project
-- [ ] Create onboarding wizard (3-4 screens max)
-  - [ ] Name input
-  - [ ] Age selection
-  - [ ] Interest selection (predefined list)
-  - [ ] Target language selection (limit to 1-2 languages for MVP)
+- [x] Setup Next.js project
+- [x] Create onboarding wizard (3-4 screens max)
+  - [x] Name input
+  - [x] Age selection
+  - [x] Interest selection (predefined list)
+  - [x] Target language selection (limit to 1-2 languages for MVP)
 - [ ] Build basic dashboard
   - [ ] Display user profile
   - [ ] Show 3-4 conversation topics
   - [ ] Simple chat interface
 
 ### Nice to Have
-- [ ] Basic styling/UI polish
-- [ ] Mobile responsiveness
-- [ ] Progress indicators
+- [x] Basic styling/UI polish
+- [x] Mobile responsiveness
+- [x] Progress indicators
 
 ## Backend (FastAPI) Tasks
 ### High Priority

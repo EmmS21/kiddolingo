@@ -2,6 +2,9 @@
 
 import Image from "next/image";
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
+import { saveUserData } from './lib/db';
+import type { Step } from './lib/types';
 
 type Step = 'name' | 'age' | 'interests' | 'language';
 
@@ -36,13 +39,38 @@ export default function Home() {
   const handleNext = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    if (currentStep === 'name') setCurrentStep('age');
-    else if (currentStep === 'age') setCurrentStep('interests');
-    else if (currentStep === 'interests') setCurrentStep('language');
-    
-    setIsSubmitting(false);
+
+    try {
+      if (currentStep === 'language') {
+        const response = await fetch('/api/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) throw new Error('Failed to save user data');
+        
+        const { userId } = await response.json();
+        localStorage.setItem('userId', userId.toString());
+        toast.success('Profile saved successfully! Redirecting to dashboard...');
+        
+        setTimeout(() => {
+          // router.push('/dashboard');
+        }, 2000);
+      } else {
+        // Normal wizard progression
+        if (currentStep === 'name') setCurrentStep('age');
+        else if (currentStep === 'age') setCurrentStep('interests');
+        else if (currentStep === 'interests') setCurrentStep('language');
+      }
+    } catch (error) {
+      console.error('Failed to save user data:', error);
+      toast.error('Failed to save profile. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleBack = () => {
@@ -248,8 +276,30 @@ export default function Home() {
                     </span>
                   ) : (
                     <span className="inline-flex items-center">
-                      Next 
-                      <span className="ml-2 animate-bounce-horizontal group-hover:animate-bounce-horizontal-active">→</span>
+                      {currentStep === 'language' ? (
+                        <>
+                          Save
+                          <svg 
+                            className="ml-2 w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity duration-200" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24" 
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round" 
+                              strokeWidth={2} 
+                              d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                            />
+                          </svg>
+                        </>
+                      ) : (
+                        <>
+                          Next 
+                          <span className="ml-2 animate-bounce-horizontal group-hover:animate-bounce-horizontal-active">→</span>
+                        </>
+                      )}
                     </span>
                   )}
                 </button>
