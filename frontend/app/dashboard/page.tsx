@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { toast } from 'react-hot-toast';
@@ -18,6 +18,7 @@ export default function Dashboard() {
   const router = useRouter();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function loadUserProfile() {
@@ -40,6 +41,47 @@ export default function Dashboard() {
     loadUserProfile();
   }, [router]);
 
+  const handleProfilePictureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+
+    // Validate file size (e.g., max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size must be less than 5MB');
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/users/profile-picture', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload profile picture');
+      }
+
+      // Refresh user data to show new profile picture
+      const updatedUserResponse = await fetch('/api/users');
+      const updatedUser = await updatedUserResponse.json();
+      setUser(updatedUser);
+
+      toast.success('Profile picture updated successfully!');
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      toast.error('Failed to update profile picture');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -58,14 +100,22 @@ export default function Dashboard() {
         {/* Centered Profile Section */}
         <div className="flex flex-col items-center text-center mb-12">
           <div className="relative mb-4 group">
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={handleProfilePictureUpload}
+            />
             <div className="w-32 h-32 rounded-full border-4 border-purple-200 overflow-hidden">
               {user.profile_picture ? (
                 <Image
-                  src={`data:image/jpeg;base64,${user.profile_picture}`}
+                  src={`data:image/jpeg;base64,${Buffer.from(user.profile_picture).toString('base64')}`}
                   alt={user.name}
                   width={128}
                   height={128}
-                  className="object-cover"
+                  className="w-full h-full object-cover"
+                  priority
                 />
               ) : (
                 <div className="w-full h-full bg-purple-100 flex items-center justify-center">
@@ -81,9 +131,7 @@ export default function Dashboard() {
               {/* Camera Button - Only shows on group hover */}
               <button 
                 className="absolute bottom-0 right-0 bg-purple-600 text-white p-2 rounded-full hover:bg-purple-700 transition-all opacity-0 group-hover:opacity-100"
-                onClick={() => {
-                  toast.success('Profile picture upload coming soon!');
-                }}
+                onClick={() => fileInputRef.current?.click()}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
