@@ -6,7 +6,14 @@ import { ProgressBar } from './ProgressBar';
 import { SubtopicsList } from './SubtopicsList';
 import LoadingSpinner from '../ui/LoadingSpinner';
 
-export function TopicCard({ topic, xpPoints }: TopicCardProps) {
+interface TopicCardProps {
+  topic: string;
+  language: string;
+  userAge: number;
+  // ... other existing props
+}
+
+export function TopicCard({ topic, language, userAge, xpPoints }: TopicCardProps) {
   const [subtopics, setSubtopics] = useState([]);
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -52,7 +59,12 @@ export function TopicCard({ topic, xpPoints }: TopicCardProps) {
           {loading ? (
             <LoadingSpinner />
           ) : (
-            <SubtopicsList subtopics={subtopics} />
+            <SubtopicsList
+              subtopics={subtopics}
+              mainTopic={topic}
+              language={language}
+              userAge={userAge}
+            />
           )}
         </div>
       )}

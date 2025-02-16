@@ -4,14 +4,15 @@
  ┣ 📂 app
  ┃ ┣ 📂 api
  ┃ ┃ ┣ 📜 topics.py        # Topic/subtopic endpoints
- ┃ ┃ ┣ 📜 voice.py         # NEW: Voice WebSocket endpoint
- ┃ ┃ ┗ 📜 schemas.py       # Pydantic models
+ ┃ ┃ ┣ �� voice.py         # Voice WebSocket endpoint
+ ┃ ┃ ┗ 📜 schemas.py       # Pydantic models including UserProfile
  ┃ ┣ 📂 core
  ┃ ┃ ┣ 📜 config.py        # Environment and app settings
+ ┃ ┃ ┣ 📜 prompts.py       # NEW: AI prompt templates
  ┃ ┃ ┗ 📜 database.py      # SQLite setup
  ┃ ┣ 📂 services
  ┃ ┃ ┣ 📜 openai.py        # OpenAI integration & prompts
- ┃ ┃ ┗ 📜 voice_processor.py  # NEW: Voice processing service
+ ┃ ┃ ┗ 📜 voice_processor.py  # Voice processing service
  ┃ ┗ 📜 main.py            # FastAPI app initialization
  ┣ 📜 requirements.txt
  ┗ 📜 .env
@@ -28,6 +29,20 @@ POST /api/topics/{topic_id}/subtopics/generate
 
 GET /api/topics/{topic_id}/subtopics
 - Returns cached subtopics if available
+
+## Voice WebSocket
+WS /api/voice/ws/voice
+- Input: 
+  - Binary audio data
+  - User profile (via connection parameters)
+- Output: 
+  - Binary audio response
+  - Includes translations and corrections
+- Uses context-aware prompts based on:
+  - Target language
+  - Current topic
+  - User age
+  - Proficiency level
 
 # Database Models (SQLite)
 

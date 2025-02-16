@@ -24,10 +24,19 @@
  ┃ ┃ ┃ ┃ ┣ 📜 SubtopicItem.tsx     # Individual subtopic with difficulty and progress
  ┃ ┃ ┃ ┃ ┣ 📜 ProgressBar.tsx      # Reusable progress bar component
  ┃ ┃ ┃ ┃ ┗ 📜 PracticeWords.tsx    # Component for displaying practice words
- ┃ ┃ ┃ ┗ 📜 LoadingSpinner.tsx     # Loading state while fetching subtopics
+ ┃ ┃ ┃ ┣ 📂 chat                    # NEW: Chat components
+ ┃ ┃ ┃ ┃ ┣ 📜 VoiceChat.tsx         # Main chat interface
+ ┃ ┃ ┃ ┃ ┣ 📜 AudioRecorder.tsx     # Recording controls
+ ┃ ┃ ┃ ┃ ┣ 📜 ChatFeedback.tsx      # Visual feedback
+ ┃ ┃ ┃ ┃ ┗ 📜 ChatTranscript.tsx    # Show text transcript
+ ┃ ┃ ┃ ┗ 📜 LoadingSpinner.tsx     # Shared loading spinner component
  ┃ ┃ ┣ 📂 lib            # Shared utilities
  ┃ ┃ ┃ ┣ 📜 db.ts        # Database operations
  ┃ ┃ ┃ ┣ 📜 types.ts     # Shared TypeScript types
+ ┃ ┃ ┃ ┣ 📂 audio                   # NEW: Audio utilities
+ ┃ ┃ ┃ ┃ ┗ 📜 recorder.ts           # Audio recording helpers
+ ┃ ┃ ┃ ┣ 📂 websocket              # NEW: WebSocket utilities
+ ┃ ┃ ┃ ┃ ┗ 📜 voiceChat.ts         # WebSocket connection manager
  ┃ ┃ ┃ ┗ 📜 constants.ts    # UPDATED: Added languages list
  ┃ ┃ ┃ ┗ 📜 topics.ts              # Topic-related utilities
  ┃ ┃ ┣ 📜 globals.css
@@ -54,6 +63,9 @@
 4. Added `/api/topics/[topicId]/subtopics/route.ts` for subtopic generation
 5. Added new types in `types.ts` for subtopics
 6. Added new database tables and functions for subtopics caching
+7. Added chat components for voice conversation interface
+8. Added audio utilities for recording management
+9. Added WebSocket utilities for connection handling
 
 # File Updates:
 1. Added `/api/users/languages/route.ts` for handling language updates
@@ -62,6 +74,7 @@
 4. Modified `lib/types.ts` to include Subtopic interfaces
 5. Modified `components/topics/TopicCard.tsx` to fetch real data
 6. Modified `components/topics/SubtopicsList.tsx` to use real data
+7. Added new chat-related components and utilities
 
 # Modified Files:
 - `lib/constants.ts`: Added shared language options

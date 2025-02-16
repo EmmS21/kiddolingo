@@ -6,6 +6,8 @@ import base64
 import time
 from starlette.websockets import WebSocketState
 from openai import AsyncOpenAI
+from ..core.prompts import get_language_learning_prompt
+from ..api.schemas import UserProfile  # New schema needed
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -17,7 +19,7 @@ class VoiceConnectionManager:
         self.connections = {}
         self.heartbeat_interval = 5  # seconds
 
-    async def handle_connection(self, websocket: WebSocket):
+    async def handle_connection(self, websocket: WebSocket, user_profile: dict):
         try:
             await websocket.accept()
             conn_id = id(websocket)
@@ -38,7 +40,17 @@ class VoiceConnectionManager:
                     elif message["type"] == "websocket.receive" and "bytes" in message:
                         try:
                             # Process the audio data
-                            response = await process_audio(message["bytes"])
+                            prompt = get_language_learning_prompt(
+                                target_language=user_profile["target_language"],
+                                topic=user_profile["current_topic"],
+                                user_age=user_profile["age"],
+                                proficiency_level=user_profile["proficiency_level"]
+                            )
+                            response = await process_audio(
+                                audio_data=message["bytes"],
+                                prompt=prompt,
+                                target_language=user_profile["target_language"]
+                            )
                             await websocket.send_bytes(response)
                         except Exception as e:
                             logger.info(f"Error during audio processing: {e}")
@@ -76,12 +88,56 @@ class VoiceConnectionManager:
         except Exception as e:
             logger.info(f"Error during cleanup: {e}")
 
+    async def handle_message(self, websocket: WebSocket, message: bytes, user_profile: UserProfile):
+        try:
+            # Get the appropriate prompt based on user profile
+            prompt = get_language_learning_prompt(
+                target_language=user_profile.target_language,
+                topic=user_profile.current_topic,
+                user_age=user_profile.age,
+                proficiency_level=user_profile.proficiency_level
+            )
+            
+            # Process the audio with the context-aware prompt
+            response = await process_audio(
+                audio_data=message,
+                prompt=prompt,
+                target_language=user_profile.target_language
+            )
+            
+            if not websocket.closing and websocket.client_state.name not in ("CLOSING", "DISCONNECTED"):
+                await websocket.send_bytes(response)
+        except Exception as e:
+            logger.error(f"Error processing message: {e}")
+
 # Initialize the connection manager
 manager = VoiceConnectionManager()
 
 @router.websocket("/ws/voice")
-async def voice_endpoint(websocket: WebSocket):
-    await manager.handle_connection(websocket)
+async def voice_endpoint(
+    websocket: WebSocket,
+    target_language: str,
+    topic: str,
+    user_age: int,
+    proficiency_level: str = "beginner"
+):
+    """
+    WebSocket endpoint for voice-based language learning.
+    
+    Query Parameters:
+    - target_language: Language being learned (e.g., "Spanish")
+    - topic: Current conversation topic (e.g., "Animals")
+    - user_age: Age of the child
+    - proficiency_level: Current learning level (default: beginner)
+    """
+    user_profile = {
+        "target_language": target_language,
+        "current_topic": topic,
+        "age": user_age,
+        "proficiency_level": proficiency_level
+    }
+    
+    await manager.handle_connection(websocket, user_profile)
 
 async def transcribe(audio_data: bytes) -> str:
     """Convert audio to text using Whisper"""

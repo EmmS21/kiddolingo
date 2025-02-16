@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import { PracticeWord } from '@/app/lib/types';
+import { VoiceChat } from '../chat/VoiceChat';
 
 interface Subtopic {
   id: string;
@@ -16,21 +17,28 @@ interface SubtopicsListProps {
   topicId: string;
   isVisible: boolean;
   selectedLanguage: string;
+  mainTopic: string;
+  userAge: number;
 }
 
-export function SubtopicsList({ topicId, isVisible, selectedLanguage }: SubtopicsListProps) {
+export function SubtopicsList({ topicId, isVisible, selectedLanguage, mainTopic, userAge }: SubtopicsListProps) {
   const [subtopics, setSubtopics] = useState<Subtopic[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeChat, setActiveChat] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchSubtopics() {
       if (!isVisible) return;
       
-      setLoading(true);
-      setError(null);
-      
       try {
+        // Get userId from localStorage (set during onboarding)
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+          setError('User not found');
+          return;
+        }
+
         const response = await fetch(`/api/topics/${encodeURIComponent(topicId)}/subtopics?language=${encodeURIComponent(selectedLanguage)}`);
         if (!response.ok) throw new Error('Failed to fetch subtopics');
         
@@ -48,6 +56,31 @@ export function SubtopicsList({ topicId, isVisible, selectedLanguage }: Subtopic
       fetchSubtopics();
     }
   }, [topicId, isVisible, selectedLanguage]);
+
+  const handleStartChat = (subtopicId: string) => {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      console.error('No user ID found');
+      return;
+    }
+
+    console.log('handleStartChat called with:', {
+      userId,
+      subtopicId,
+      currentActiveChat: activeChat,
+      selectedLanguage,
+      mainTopic: topicId, // Use topicId instead of mainTopic
+      userAge
+    });
+    
+    setActiveChat(subtopicId);
+  };
+
+  console.log('SubtopicsList render:', {
+    subtopics,
+    activeChat,
+    isVisible
+  });
 
   if (!isVisible) return null;
   
@@ -77,7 +110,13 @@ export function SubtopicsList({ topicId, isVisible, selectedLanguage }: Subtopic
               {subtopic.is_completed ? (
                 <span className="text-green-600">✓ Completed</span>
               ) : (
-                <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors group">
+                <button
+                  onClick={() => {
+                    console.log('Button clicked!');
+                    handleStartChat(subtopic.id);
+                  }}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors group"
+                >
                   <span className="flex items-center gap-2">
                     Start Chat
                     <svg 
@@ -112,6 +151,16 @@ export function SubtopicsList({ topicId, isVisible, selectedLanguage }: Subtopic
               ))}
             </div>
           </div>
+
+          {activeChat === subtopic.id && (
+            <div className="mt-4 border-t pt-4">
+              <VoiceChat
+                language={selectedLanguage}
+                topic={topicId}
+                userAge={Number(localStorage.getItem('userAge'))}
+              />
+            </div>
+          )}
         </div>
       ))}
     </div>

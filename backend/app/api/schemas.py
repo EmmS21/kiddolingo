@@ -21,3 +21,10 @@ class SubtopicResponse(BaseModel):
 class GenerateSubtopicsRequest(BaseModel):
     user_age: int
     target_language: str
+
+class UserProfile(BaseModel):
+    user_id: str
+    age: int
+    target_language: str
+    current_topic: str
+    proficiency_level: str = "beginner"
