@@ -4,12 +4,14 @@
  ┣ 📂 app
  ┃ ┣ 📂 api
  ┃ ┃ ┣ 📜 topics.py        # Topic/subtopic endpoints
+ ┃ ┃ ┣ 📜 voice.py         # NEW: Voice WebSocket endpoint
  ┃ ┃ ┗ 📜 schemas.py       # Pydantic models
  ┃ ┣ 📂 core
  ┃ ┃ ┣ 📜 config.py        # Environment and app settings
  ┃ ┃ ┗ 📜 database.py      # SQLite setup
  ┃ ┣ 📂 services
- ┃ ┃ ┗ 📜 openai.py        # OpenAI integration & prompts
+ ┃ ┃ ┣ 📜 openai.py        # OpenAI integration & prompts
+ ┃ ┃ ┗ 📜 voice_processor.py  # NEW: Voice processing service
  ┃ ┗ 📜 main.py            # FastAPI app initialization
  ┣ 📜 requirements.txt
  ┗ 📜 .env

@@ -1,15 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .api.topics import router as topics_router
+from .api import topics, voice  
 
 app = FastAPI(title="KiddoLingo API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],  # In production, specify actual origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(topics_router)
+# Include routers
+app.include_router(topics.router, prefix="/api/topics", tags=["topics"])
+app.include_router(voice.router, prefix="/api/voice", tags=["voice"])
