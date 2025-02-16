@@ -1,7 +1,7 @@
 # MVP Checklist - 24 Hour Build
 
 ## Core Features Priority
-- [ ] Basic user onboarding (no auth required for MVP)
+- [x] Basic user onboarding (no auth required for MVP)
 - [ ] Simple conversation interface
 - [ ] OpenAI integration for conversations
 - [ ] Basic topic generation based on interests
@@ -14,9 +14,10 @@
   - [x] Age selection
   - [x] Interest selection (predefined list)
   - [x] Target language selection (limit to 1-2 languages for MVP)
-- [ ] Build basic dashboard
-  - [ ] Display user profile
-  - [ ] Show 3-4 conversation topics
+- [x] Build basic dashboard
+  - [x] Display user profile
+  - [x] Show interests as conversation topics
+  - [x] Language selection/switching UI
   - [ ] Simple chat interface
 
 ### Nice to Have
@@ -28,7 +29,8 @@
 ### High Priority
 - [ ] Setup FastAPI project
 - [ ] Create basic API endpoints
-  - [ ] Save user profile
+  - [x] Save user profile
+  - [x] Update user languages
   - [ ] Generate topics
   - [ ] Handle chat messages
 - [ ] OpenAI integration
@@ -42,51 +44,47 @@
 
 ## Database (SQLite for MVP)
 ### High Priority
-- [ ] Setup SQLite database
-- [ ] Basic schema
-  - [ ] Users table
+- [x] Setup SQLite database
+- [x] Basic schema
+  - [x] Users table
+  - [x] UserLanguages table
+  - [x] UserInterests table
   - [ ] Conversations table
   - [ ] Topics table
 
 ## Integration Points
-- [ ] Frontend-Backend communication
+- [x] Frontend-Backend communication (partially - user data only)
+- [x] Language management system
 - [ ] OpenAI API integration
-- [ ] Database connections
+- [x] Database connections
 
 ## Demo Preparation
 - [ ] Prepare 2-3 example scenarios
 - [ ] Test with different age groups/interests
 - [ ] Prepare backup responses in case of API issues
 
-## Out of Scope for MVP
-- Voice integration (text-based chat for MVP)
-- Authentication
-- Multiple language support (focus on one language pair)
-- Progress tracking
-- Advanced error handling
-- Complex database relations
-- Parent dashboard
-- Advanced topic generation
-
-
-
 
 ## Dashboard Requirements
 ### User Profile Section
-- [ ] Profile picture component
-  - [ ] Default avatar if no upload
-  - [ ] Upload/change functionality
-  - [ ] Store image in SQLite as BLOB
-  - [ ] Circular frame with purple border
-- [ ] User name display
-  - [ ] Greeting message
-  - [ ] Match onboarding typography
+- [x] Profile picture component
+  - [x] Default avatar if no upload
+  - [x] Upload/change functionality
+  - [x] Store image in SQLite as BLOB
+  - [x] Circular frame with purple border
+- [x] User name display
+  - [x] Display name
+  - [x] Match onboarding typography
+- [x] Language management
+  - [x] Display current language
+  - [x] Add new languages
+  - [x] Language switcher UI
 
 ### Topics Section
-- [ ] High-level topics grid
-  - [ ] Card for each interest from onboarding
+- [x] High-level topics grid
+  - [x] Card for each interest from onboarding
+  - [x] Interest icons from constants
   - [ ] Visual indicator of progress/mastery
-  - [ ] Expandable/collapsible subtopics
+  - [x] Expandable/collapsible UI (needs functionality)
 - [ ] Subtopics (AI Generated)
   - [ ] 3-4 subtopics per main topic
   - [ ] Difficulty level indicator
@@ -121,20 +119,19 @@
   - [ ] conversation_date
 
 ### Color Scheme (Matching Onboarding)
-- Primary: Purple-600 (#9333EA)
-- Secondary: Black for text
-- Background: White
-- Accents:
-  - Light Purple for hover states
-  - Gray-200 for inactive states
-  - White text on purple backgrounds
+- [x] Primary: Purple-600 (#9333EA)
+- [x] Secondary: Black for text
+- [x] Background: White
+- [x] Accents:
+  - [x] Light Purple for hover states
+  - [x] Gray-200 for inactive states
+  - [x] White text on purple backgrounds
 
 ### Layout
-- [ ] Responsive grid system
-- [ ] Sidebar for profile/navigation
-- [ ] Main content area for topics
+- [x] Responsive grid system
+- [x] Main content area for topics
 - [ ] Right panel for vocabulary practice
-- [ ] Consistent padding/spacing with onboarding
+- [x] Consistent padding/spacing with onboarding
 
 ### Navigation
 - [ ] Profile settings access
@@ -143,16 +140,48 @@
 - [ ] Vocabulary practice shortcuts
 
 ### Performance Considerations
-- [ ] Lazy loading for profile images
+- [x] Lazy loading for profile images
 - [ ] Pagination for topics/subtopics
 - [ ] Caching for AI-generated content
 - [ ] Optimistic UI updates
 
 ### MVP Limitations
-- Limited to 3-4 main topics initially
-- Basic AI topic generation
-- Simple scoring system (1-5)
-- Local image storage only
-- Basic vocabulary tracking
+- [x] Limited to 3-4 main topics initially
+- [ ] Basic AI topic generation
+- [ ] Simple scoring system (1-5)
+- [x] Local image storage only
+- [ ] Basic vocabulary tracking
+
+## Subtopics Implementation Plan
+### Frontend Tasks
+- [ ] Create SubtopicsList component
+  - [ ] Expandable interface when topic is clicked
+  - [ ] Loading state while fetching subtopics
+  - [ ] Display 3-4 subtopics per main topic
+  - [ ] Simple difficulty indicator (Easy/Medium/Hard)
+  - [ ] "Start Conversation" button for each subtopic
+
+### Backend Tasks
+- [ ] Create subtopics API endpoints
+  - [ ] GET /api/topics/{topic_id}/subtopics
+  - [ ] POST /api/topics/{topic_id}/subtopics/complete
+  - [ ] POST /api/topics/{topic_id}/generate (for AI generation)
+
+### Database Updates
+- [ ] Add Subtopics table
+  - [ ] id (PRIMARY KEY)
+  - [ ] topic_id (FOREIGN KEY -> Topics.id)
+  - [ ] title (TEXT NOT NULL)
+  - [ ] difficulty (TEXT NOT NULL) # Easy/Medium/Hard
+  - [ ] is_completed (BOOLEAN DEFAULT FALSE)
+  - [ ] created_at (TIMESTAMP)
+  - [ ] completed_at (TIMESTAMP NULL)
+
+### MVP Limitations
+- [ ] Limit to 3-4 subtopics per main topic
+- [ ] Store AI-generated subtopics locally to minimize API calls
+- [ ] Simple completion tracking (completed/not completed)
+- [ ] Basic difficulty levels only (no dynamic adjustment)
+- [ ] No progress/mastery scoring for MVP
 
 

@@ -4,6 +4,9 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { toast } from 'react-hot-toast';
+import { INTEREST_ICONS, AVAILABLE_LANGUAGES } from '../lib/constants';
+import { SubtopicsList } from '../components/topics/SubtopicsList';
+import { ProgressBar } from '../components/topics/ProgressBar';
 
 interface UserProfile {
   id: number;
@@ -19,6 +22,9 @@ export default function Dashboard() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showLanguages, setShowLanguages] = useState(false);
+  const [showAddLanguages, setShowAddLanguages] = useState(false);
+  const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadUserProfile() {
@@ -82,6 +88,28 @@ export default function Dashboard() {
     }
   };
 
+  const handleAddLanguage = async (language: string) => {
+    try {
+      const response = await fetch('/api/users/languages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ language }),
+      });
+
+      if (!response.ok) throw new Error('Failed to add language');
+
+      // Refresh user data
+      const updatedUserResponse = await fetch('/api/users');
+      const updatedUserData = await updatedUserResponse.json();
+      setUser(updatedUserData);
+      setShowAddLanguages(false); // Close the dropdown after adding
+    } catch (error) {
+      console.error('Failed to add language:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -96,6 +124,57 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Language Selector aligned with profile picture */}
+      {user && user.languages.length > 0 && (
+        <div className="absolute top-12 right-8 lg:right-[calc(50%-35rem)]">
+          <button 
+            onClick={() => setShowLanguages(!showLanguages)}
+            className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
+          >
+            <span>🌐</span>
+            <span>{user.languages[0]}</span>
+          </button>
+          
+          {showLanguages && (
+            <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100">
+              {user.languages.map((language: string) => (
+                <button
+                  key={language}
+                  className="block w-full px-4 py-2 text-left hover:bg-purple-50 text-gray-700"
+                >
+                  {language}
+                </button>
+              ))}
+              
+              <div className="my-2 border-t border-gray-100" />
+              
+              <button
+                onClick={() => setShowAddLanguages(!showAddLanguages)}
+                className="block w-full px-4 py-2 text-left hover:bg-purple-50 text-purple-600 font-medium"
+              >
+                + Add Language
+              </button>
+
+              {showAddLanguages && (
+                <div className="absolute left-full ml-2 top-0 py-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100">
+                  {AVAILABLE_LANGUAGES
+                    .filter(lang => !user.languages.includes(lang))
+                    .map(language => (
+                      <button
+                        key={language}
+                        onClick={() => handleAddLanguage(language)}
+                        className="block w-full px-4 py-2 text-left hover:bg-purple-50 text-gray-700"
+                      >
+                        {language}
+                      </button>
+                    ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Centered Profile Section */}
         <div className="flex flex-col items-center text-center mb-12">
@@ -147,25 +226,44 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Topics Grid */}
-        <div className="mt-12 space-y-4">
-          {user.interests.map((interest) => (
-            <div 
-              key={interest}
-              className="p-6 bg-white rounded-lg border border-purple-100 hover:shadow-md transition-shadow cursor-pointer"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {interest === 'Anime' && '🎭'}
-                  {interest === 'Science Fiction' && '🚀'}
-                  <h3 className="text-xl font-semibold text-gray-900">{interest}</h3>
+        {/* Topics Section - Only changed to use database interests */}
+        <div className="mt-8 space-y-4">
+          <h2 className="text-2xl font-bold text-gray-900">Topics</h2>
+          <div className="space-y-4">
+            {user.interests.map((interest: string) => (
+              <div 
+                key={interest}
+                className="p-6 bg-white rounded-lg border border-purple-100 hover:shadow-md transition-shadow"
+              >
+                <div 
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => setExpandedTopic(expandedTopic === interest ? null : interest)}
+                >
+                  <div className="flex items-center gap-2">
+                    {INTEREST_ICONS[interest] || '❔'}
+                    <h3 className="text-xl font-semibold text-gray-900">{interest}</h3>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <ProgressBar progress={75} className="w-32" />
+                    <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
+                      75 XP
+                    </div>
+                    <svg className={`w-6 h-6 text-purple-600 transition-transform ${
+                      expandedTopic === interest ? 'transform rotate-180' : ''
+                    }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                
+                <SubtopicsList 
+                  topicId={interest}
+                  isVisible={expandedTopic === interest}
+                  selectedLanguage={user.languages[0]}
+                />
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
