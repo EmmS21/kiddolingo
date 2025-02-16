@@ -4,7 +4,7 @@
 - [x] Basic user onboarding (no auth required for MVP)
 - [ ] Simple conversation interface
 - [ ] OpenAI integration for conversations
-- [ ] Basic topic generation based on interests
+- [x] Basic topic generation based on interests
 
 ## Frontend (NextJS) Tasks
 ### High Priority
@@ -27,19 +27,21 @@
 
 ## Backend (FastAPI) Tasks
 ### High Priority
-- [ ] Setup FastAPI project
+- [x] Setup FastAPI project
 - [ ] Create basic API endpoints
   - [x] Save user profile
   - [x] Update user languages
-  - [ ] Generate topics
+  - [x] Generate topics
+  - [x] Generate subtopics with practice words
   - [ ] Handle chat messages
-- [ ] OpenAI integration
-  - [ ] Basic prompt engineering for child-friendly responses
-  - [ ] Language translation
+- [x] OpenAI integration
+  - [x] Basic prompt engineering for subtopics generation
+  - [x] Language-specific practice words
+  - [ ] Chat conversation handling
 
 ### Nice to Have
-- [ ] Response caching
-- [ ] Error handling
+- [x] Response caching
+- [x] Error handling
 - [ ] Rate limiting
 
 ## Database (SQLite for MVP)
@@ -50,10 +52,10 @@
   - [x] UserLanguages table
   - [x] UserInterests table
   - [ ] Conversations table
-  - [ ] Topics table
+  - [x] Topics table
 
 ## Integration Points
-- [x] Frontend-Backend communication (partially - user data only)
+- [x] Frontend-Backend communication
 - [x] Language management system
 - [ ] OpenAI API integration
 - [x] Database connections
@@ -62,7 +64,6 @@
 - [ ] Prepare 2-3 example scenarios
 - [ ] Test with different age groups/interests
 - [ ] Prepare backup responses in case of API issues
-
 
 ## Dashboard Requirements
 ### User Profile Section
@@ -83,13 +84,13 @@
 - [x] High-level topics grid
   - [x] Card for each interest from onboarding
   - [x] Interest icons from constants
-  - [ ] Visual indicator of progress/mastery
-  - [x] Expandable/collapsible UI (needs functionality)
-- [ ] Subtopics (AI Generated)
-  - [ ] 3-4 subtopics per main topic
-  - [ ] Difficulty level indicator
+  - [x] Visual indicator of progress/mastery
+  - [x] Expandable/collapsible UI
+- [x] Subtopics (AI Generated)
+  - [x] 3-4 subtopics per main topic
+  - [x] Difficulty level indicator
   - [ ] Previous conversation scores
-  - [ ] "Start Conversation" button
+  - [x] "Start Chat" button with hover mic icon
 
 ### Vocabulary Practice
 - [ ] Vocabulary cards per conversation
@@ -103,15 +104,15 @@
   - [ ] Mark as mastered option
 
 ### Database Schema Updates
-- [ ] Add ProfilePictures table
-  - [ ] user_id (FOREIGN KEY)
-  - [ ] image_data (BLOB)
-  - [ ] updated_at (TIMESTAMP)
-- [ ] Add Topics table
-  - [ ] main_topic (from interests)
-  - [ ] subtopic
-  - [ ] difficulty_level
-  - [ ] generated_by_ai (BOOLEAN)
+- [x] Add ProfilePictures table
+  - [x] user_id (FOREIGN KEY)
+  - [x] image_data (BLOB)
+  - [x] updated_at (TIMESTAMP)
+- [x] Add Topics table
+  - [x] main_topic (from interests)
+  - [x] subtopic
+  - [x] difficulty_level
+  - [x] generated_by_ai (BOOLEAN)
 - [ ] Add TopicScores table
   - [ ] topic_id (FOREIGN KEY)
   - [ ] user_id (FOREIGN KEY)
@@ -134,7 +135,7 @@
 - [x] Consistent padding/spacing with onboarding
 
 ### Navigation
-- [ ] Profile settings access
+- [x] Profile settings access
 - [ ] Topic filtering/search
 - [ ] Easy access to start new conversations
 - [ ] Vocabulary practice shortcuts
@@ -142,46 +143,46 @@
 ### Performance Considerations
 - [x] Lazy loading for profile images
 - [ ] Pagination for topics/subtopics
-- [ ] Caching for AI-generated content
+- [x] Caching for AI-generated content
 - [ ] Optimistic UI updates
 
 ### MVP Limitations
 - [x] Limited to 3-4 main topics initially
-- [ ] Basic AI topic generation
+- [x] Basic AI topic generation
 - [ ] Simple scoring system (1-5)
 - [x] Local image storage only
 - [ ] Basic vocabulary tracking
 
 ## Subtopics Implementation Plan
 ### Frontend Tasks
-- [ ] Create SubtopicsList component
-  - [ ] Expandable interface when topic is clicked
-  - [ ] Loading state while fetching subtopics
-  - [ ] Display 3-4 subtopics per main topic
-  - [ ] Simple difficulty indicator (Easy/Medium/Hard)
-  - [ ] "Start Conversation" button for each subtopic
+- [x] Create SubtopicsList component
+  - [x] Expandable interface when topic is clicked
+  - [x] Loading state while fetching subtopics
+  - [x] Display 3-4 subtopics per main topic
+  - [x] Simple difficulty indicator (Easy/Medium/Hard)
+  - [x] "Start Chat" button for each subtopic
 
 ### Backend Tasks
-- [ ] Create subtopics API endpoints
-  - [ ] GET /api/topics/{topic_id}/subtopics
+- [x] Create subtopics API endpoints
+  - [x] POST /api/topics/{topic_id}/subtopics/generate
+  - [ ] GET /api/topics/{topic_id}/subtopics (cached)
   - [ ] POST /api/topics/{topic_id}/subtopics/complete
-  - [ ] POST /api/topics/{topic_id}/generate (for AI generation)
 
 ### Database Updates
-- [ ] Add Subtopics table
-  - [ ] id (PRIMARY KEY)
-  - [ ] topic_id (FOREIGN KEY -> Topics.id)
-  - [ ] title (TEXT NOT NULL)
-  - [ ] difficulty (TEXT NOT NULL) # Easy/Medium/Hard
-  - [ ] is_completed (BOOLEAN DEFAULT FALSE)
-  - [ ] created_at (TIMESTAMP)
-  - [ ] completed_at (TIMESTAMP NULL)
+- [x] Add Subtopics table
+  - [x] id (TEXT PRIMARY KEY)
+  - [x] topic_id (TEXT)
+  - [x] title (TEXT)
+  - [x] difficulty (TEXT)
+  - [x] is_completed (BOOLEAN)
+  - [x] practice_words (TEXT JSON)
 
 ### MVP Limitations
-- [ ] Limit to 3-4 subtopics per main topic
-- [ ] Store AI-generated subtopics locally to minimize API calls
-- [ ] Simple completion tracking (completed/not completed)
-- [ ] Basic difficulty levels only (no dynamic adjustment)
+- [x] Limit to 3-4 subtopics per main topic
+- [x] Store AI-generated subtopics locally to minimize API calls
+- [x] Simple completion tracking (completed/not completed)
+- [x] Basic difficulty levels only (no dynamic adjustment)
+- [x] Single language pair support per request
 - [ ] No progress/mastery scoring for MVP
 
 
